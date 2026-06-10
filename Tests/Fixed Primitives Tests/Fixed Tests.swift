@@ -106,6 +106,23 @@ struct FixedTests {
         let count = Probe.destroyedCount
         #expect(count == 2)
     }
+
+    @Test
+    func `Fixed equality and hashing are span-keyed and capacity-independent`() throws {
+        let f1 = try FixedArray<Int>(count: Index<Int>.Count(3)) { _ in 7 }
+        let f2 = try FixedArray<Int>(count: Index<Int>.Count(3)) { _ in 7 }
+        let equal = (f1 == f2)                       // Equation.Protocol over the span
+        #expect(equal)
+        var h1 = Hasher(), h2 = Hasher()
+        f1.hash(into: &h1)
+        f2.hash(into: &h2)
+        #expect(h1.finalize() == h2.finalize())      // Hash.Protocol over the span
+
+        var f3 = try FixedArray<Int>(count: Index<Int>.Count(3)) { _ in 7 }
+        f3[1] = 8
+        let diverged = (f1 != f3)
+        #expect(diverged)
+    }
 }
 
 /// Destruction recorder (the suite above is `.serialized`).
