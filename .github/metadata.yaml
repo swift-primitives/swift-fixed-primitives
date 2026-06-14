@@ -1,0 +1,8 @@
+# .github/metadata.yaml
+description: "The always-full column adapter — Fixed<S> enforces the count == capacity invariant over any Store/Buffer column."
+topics:
+  - primitives
+  - fixed
+homepage: "https://swift-institute.org"
+readme:
+  family: E
