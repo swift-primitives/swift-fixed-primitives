@@ -19,7 +19,6 @@ let package = Package(
         .library(name: "Fixed Primitives", targets: ["Fixed Primitives"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/swift-primitives/swift-store-primitives.git", branch: "main"),
         .package(url: "https://github.com/swift-primitives/swift-buffer-primitives.git", branch: "main"),
         .package(url: "https://github.com/swift-primitives/swift-buffer-linear-primitives.git", branch: "main"),
         .package(url: "https://github.com/swift-primitives/swift-span-primitives.git", branch: "main"),
@@ -41,7 +40,7 @@ let package = Package(
         .target(
             name: "Fixed Primitive",
             dependencies: [
-                .product(name: "Store Protocol Primitives", package: "swift-store-primitives"),
+                .product(name: "Store Protocol Primitives", package: "swift-storage-primitives"),
                 .product(name: "Buffer Protocol Primitives", package: "swift-buffer-primitives"),
                 .product(name: "Index Primitives", package: "swift-index-primitives"),
             ]
@@ -52,7 +51,7 @@ let package = Package(
             name: "Fixed Primitives",
             dependencies: [
                 "Fixed Primitive",
-                .product(name: "Store Protocol Primitives", package: "swift-store-primitives"),
+                .product(name: "Store Protocol Primitives", package: "swift-storage-primitives"),
                 .product(name: "Buffer Protocol Primitives", package: "swift-buffer-primitives"),
                 .product(name: "Buffer Primitive", package: "swift-buffer-primitives"),
                 .product(name: "Buffer Linear Primitive", package: "swift-buffer-linear-primitives"),
