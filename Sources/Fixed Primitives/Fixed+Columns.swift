@@ -33,7 +33,7 @@ extension Fixed where S: ~Copyable {
         count: Index_Primitives.Index<E>.Count,
         initializingWith initializer: (Index_Primitives.Index<E>) -> E
     ) throws(Fixed<S>.Error)
-    where S == Buffer<Storage<Memory.Allocator<Memory.Heap>.System>.Contiguous<E>>.Linear.Bounded {
+    where S == Buffer<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<E>>.Linear.Bounded {
         guard count >= .zero else {
             throw .invalidCount(count)
         }
@@ -49,12 +49,12 @@ extension Fixed where S: ~Copyable {
         count: Index_Primitives.Index<E>.Count,
         initializingWith initializer: (Index_Primitives.Index<E>) -> E
     )
-    where S == Buffer<Storage<Memory.Allocator<Memory.Heap>.System>.Contiguous<E>>.Linear.Bounded {
+    where S == Buffer<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<E>>.Linear.Bounded {
         if count == .zero {
-            self.init(store: Buffer<Storage<Memory.Allocator<Memory.Heap>.System>.Contiguous<E>>.Linear.Bounded(minimumCapacity: .zero))
+            self.init(store: Buffer<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<E>>.Linear.Bounded(minimumCapacity: .zero))
             return
         }
-        let buffer = Buffer<Storage<Memory.Allocator<Memory.Heap>.System>.Contiguous<E>>.Linear.Bounded(
+        let buffer = Buffer<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<E>>.Linear.Bounded(
             minimumCapacity: count,
             initializingCount: count,
             with: { ptr in
@@ -70,7 +70,7 @@ extension Fixed where S: ~Copyable {
     /// Creates a fixed array filled with a repeated value.
     @inlinable
     public init<E>(repeating value: E, count: Index_Primitives.Index<E>.Count)
-    where S == Buffer<Storage<Memory.Allocator<Memory.Heap>.System>.Contiguous<E>>.Linear.Bounded {
+    where S == Buffer<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<E>>.Linear.Bounded {
         self.init(__unchecked: (), count: count, initializingWith: { _ in value })
     }
 
@@ -84,8 +84,8 @@ extension Fixed where S: ~Copyable {
         capacity: Index_Primitives.Index<E>.Count,
         initializingWith initializer: (inout Swift.OutputSpan<E>) throws(Failure) -> Void
     ) throws(Failure)
-    where S == Buffer<Storage<Memory.Allocator<Memory.Heap>.System>.Contiguous<E>>.Linear.Bounded {
-        let buffer = try Buffer<Storage<Memory.Allocator<Memory.Heap>.System>.Contiguous<E>>.Linear.Bounded(
+    where S == Buffer<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<E>>.Linear.Bounded {
+        let buffer = try Buffer<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<E>>.Linear.Bounded(
             capacity: capacity,
             initializingWith: initializer
         )
@@ -104,7 +104,7 @@ extension Fixed where S: ~Copyable {
     @inlinable
     @_lifetime(&self)
     public mutating func mutableSpan<E: ~Copyable>() -> Swift.MutableSpan<E>
-    where S == Buffer<Storage<Memory.Allocator<Memory.Heap>.System>.Contiguous<E>>.Linear.Bounded {
+    where S == Buffer<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<E>>.Linear.Bounded {
         store.mutableSpan
     }
 }
@@ -121,7 +121,7 @@ extension Fixed where S: ~Copyable {
     public func withUnsafeBufferPointer<E, R, Failure: Swift.Error>(
         _ body: (UnsafeBufferPointer<E>) throws(Failure) -> R
     ) throws(Failure) -> R
-    where S == Buffer<Storage<Memory.Allocator<Memory.Heap>.System>.Contiguous<E>>.Linear.Bounded {
+    where S == Buffer<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<E>>.Linear.Bounded {
         try unsafe store.withUnsafeBufferPointer(body)
     }
 }

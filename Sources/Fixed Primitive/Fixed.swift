@@ -26,7 +26,7 @@ public import Index_Primitives
 /// The canonical column is the non-growable bounded buffer:
 ///
 /// ```swift
-/// Fixed<Buffer<Storage<Memory.Allocator<Memory.Heap>.System>.Contiguous<E>>.Linear.Bounded>
+/// Fixed<Buffer<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<E>>.Linear.Bounded>
 /// ```
 ///
 /// Copyability flows from the column (S5): a `Shared`-wrapped bounded column yields a CoW

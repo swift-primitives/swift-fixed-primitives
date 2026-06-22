@@ -27,7 +27,7 @@ import Testing
 
 /// The non-growable bounded column + the always-full discipline over it.
 private typealias BoundedHeapColumn<E: ~Copyable> =
-    Buffer<Storage<Memory.Allocator<Memory.Heap>.System>.Contiguous<E>>.Linear.Bounded
+    Buffer<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<E>>.Linear.Bounded
 
 private typealias FixedArray<E: ~Copyable> = Fixed<BoundedHeapColumn<E>>
 
