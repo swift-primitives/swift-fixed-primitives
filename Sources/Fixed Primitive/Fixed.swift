@@ -9,14 +9,14 @@
 //
 // ===----------------------------------------------------------------------===//
 
-public import Store_Protocol_Primitives
 public import Buffer_Protocol_Primitives
 public import Index_Primitives
+public import Store_Protocol_Primitives
 
 // MARK: - Fixed (the always-full discipline over a non-growable COLUMN)
 
 /// A fixed-count array that is always fully initialized — the thin, column-generic
-/// always-full ADT (the Q3-B ruling, 2026-06-10).
+/// always-full ADT.
 ///
 /// `Fixed` carries exactly ONE invariant above its column: `count == capacity`, established
 /// at construction and preserved by the surface (no remove/grow ops exist; `swap` and the
@@ -29,14 +29,15 @@ public import Index_Primitives
 /// Fixed<Buffer<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<E>>.Linear.Bounded>
 /// ```
 ///
-/// Copyability flows from the column (S5): a `Shared`-wrapped bounded column yields a CoW
+/// Copyability flows from the column: a `Shared`-wrapped bounded column yields a CoW
 /// value-semantic fixed array with zero `Fixed`-side machinery.
 @frozen
 public struct Fixed<S: Store.`Protocol` & Buffer.`Protocol` & ~Copyable>: ~Copyable
 where S.Count == Index_Primitives.Index<S.Element>.Count {
 
-    /// The storage column. The always-full invariant (`count == capacity`) holds from
-    /// construction onward.
+    /// The storage column.
+    ///
+    /// The always-full invariant (`count == capacity`) holds from construction onward.
     @usableFromInline
     package var store: S
 
@@ -50,7 +51,7 @@ where S.Count == Index_Primitives.Index<S.Element>.Count {
     }
 }
 
-// MARK: - Conditional Conformances (co-located per [COPY-FIX-004])
+// MARK: - Conditional Conformances
 
 extension Fixed: Copyable where S: Copyable {}
 

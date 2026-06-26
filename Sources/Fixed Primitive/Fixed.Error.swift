@@ -14,6 +14,7 @@ public import Index_Primitives
 extension Fixed where S: ~Copyable {
     /// Errors that can occur during fixed array construction.
     public enum Error: Swift.Error, Sendable, Equatable {
+        /// The requested element count is negative or otherwise invalid.
         case invalidCount(Index_Primitives.Index<S.Element>.Count)
 
         /// The index is out of bounds.

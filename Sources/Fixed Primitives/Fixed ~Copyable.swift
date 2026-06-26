@@ -1,3 +1,5 @@
+public import Buffer_Protocol_Primitives
+public import Collection_Primitives
 // ===----------------------------------------------------------------------===//
 //
 // This source file is part of the swift-primitives open source project
@@ -9,17 +11,15 @@
 //
 // ===----------------------------------------------------------------------===//
 public import Fixed_Primitive
-public import Collection_Primitives
-public import Store_Protocol_Primitives
-public import Buffer_Protocol_Primitives
-public import Span_Protocol_Primitives
+import Index_Primitives
 public import Iterable
 public import Iterator_Chunk_Primitives
-import Index_Primitives
 // Internal: supplies the memory→Iterable bridge default that witnesses `makeIterator()`
 // for the Span.Protocol-bridged Iterable conformance below (load-bearing for conformance
 // synthesis; not referenced from public/inlinable signatures).
 import Memory_Iterator_Primitives
+public import Span_Protocol_Primitives
+public import Store_Protocol_Primitives
 
 // ============================================================================
 // MARK: - Collection Conformances (the span-bridged lattice; mirrors Array<S>)
@@ -55,7 +55,8 @@ extension Fixed: Span.`Protocol` where S: Span.`Protocol` & ~Copyable {
 
 // No element bound — the D4 bridge vends `Iterator.Chunk` for both element kinds.
 extension Fixed: Iterable where S: Span.`Protocol` & ~Copyable {
-    @_implements(Iterable, Iterator)
+    /// The chunk iterator that walks the column's elements in order.
+    @_implements(Iterable,Iterator)  // swiftlint:disable:this comma
     public typealias IterableIterator = Iterator_Primitive.Iterator.Chunk<S.Element>
 }
 
@@ -78,7 +79,13 @@ extension Fixed where S: ~Copyable {
 
     /// The position immediately before `i`.
     @inlinable
-    public func index(before i: Index) -> Index { try! i.predecessor.exact() }
+    public func index(before i: Index) -> Index {
+        do {
+            return try i.predecessor.exact()
+        } catch {
+            preconditionFailure("Fixed.index(before:) called on the start index")
+        }
+    }
 }
 
 // ============================================================================
@@ -110,8 +117,10 @@ extension Fixed where S: ~Copyable {
 // ============================================================================
 
 extension Fixed where S: ~Copyable {
-    /// Accesses the element at the given typed index. The mutating access runs the
-    /// column's semantic mutation gate first (CoW-correct on `Shared`-wrapped columns).
+    /// Accesses the element at the given typed index.
+    ///
+    /// The mutating access runs the column's semantic mutation gate first
+    /// (CoW-correct on `Shared`-wrapped columns).
     ///
     /// - Precondition: `index` must be in bounds.
     @inlinable
@@ -149,7 +158,12 @@ extension Fixed where S: ~Copyable, S.Element: Copyable {
         at base: Index,
         offsetBy offset: Index.Offset
     ) -> S.Element? {
-        guard let newIndex = try? (base + offset) else { return nil }
+        let newIndex: Index
+        do {
+            newIndex = try base + offset
+        } catch {
+            return nil
+        }
         guard newIndex < count else { return nil }
         return store[newIndex]
     }

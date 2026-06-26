@@ -12,17 +12,17 @@
 // The always-full discipline over the bounded heap column — moved verbatim from
 // swift-array-primitives at the W5-1 extraction (G2 ruling).
 
-import Fixed_Primitives
-import Buffer_Primitive
-import Buffer_Linear_Primitive
 import Buffer_Linear_Bounded_Primitive
-import Storage_Primitive
-import Storage_Contiguous_Primitives
-import Memory_Heap_Primitives
-import Memory_Allocator_Primitive
+import Buffer_Linear_Primitive
+import Buffer_Primitive
+import Fixed_Primitives
 import Index_Primitives
-import Tagged_Primitives_Standard_Library_Integration
+import Memory_Allocator_Primitive
+import Memory_Heap_Primitives
 import Ordinal_Primitives_Standard_Library_Integration
+import Storage_Contiguous_Primitives
+import Storage_Primitive
+import Tagged_Primitives_Standard_Library_Integration
 import Testing
 
 /// The non-growable bounded column + the always-full discipline over it.
@@ -42,7 +42,7 @@ struct FixedTests {
         let isEmpty = f.isEmpty
         #expect(!isEmpty)
         let free = f.freeCapacity
-        #expect(free == Index<Int>.Count(0))        // always-full invariant
+        #expect(free == Index<Int>.Count(0))  // always-full invariant
         let e1 = f.withElement(at: 1) { $0 }
         #expect(e1 == 7)
     }
@@ -53,7 +53,8 @@ struct FixedTests {
         f[0] = 10
         f[2] = 30
         f.swap(at: 0, with: 2)
-        let e0 = f[0], e2 = f[2]
+        let e0 = f[0]
+        let e2 = f[2]
         #expect(e0 == 30)
         #expect(e2 == 10)
         let opt = f.element(at: 1)
@@ -111,12 +112,13 @@ struct FixedTests {
     func `Fixed equality and hashing are span-keyed and capacity-independent`() throws {
         let f1 = try FixedArray<Int>(count: Index<Int>.Count(3)) { _ in 7 }
         let f2 = try FixedArray<Int>(count: Index<Int>.Count(3)) { _ in 7 }
-        let equal = (f1 == f2)                       // Equation.Protocol over the span
+        let equal = (f1 == f2)  // Equation.Protocol over the span
         #expect(equal)
-        var h1 = Hasher(), h2 = Hasher()
+        var h1 = Hasher()
+        var h2 = Hasher()
         f1.hash(into: &h1)
         f2.hash(into: &h2)
-        #expect(h1.finalize() == h2.finalize())      // Hash.Protocol over the span
+        #expect(h1.finalize() == h2.finalize())  // Hash.Protocol over the span
 
         var f3 = try FixedArray<Int>(count: Index<Int>.Count(3)) { _ in 7 }
         f3[1] = 8

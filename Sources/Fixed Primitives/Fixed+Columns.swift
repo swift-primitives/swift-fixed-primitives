@@ -9,14 +9,14 @@
 //
 // ===----------------------------------------------------------------------===//
 
-public import Fixed_Primitive
-public import Buffer_Primitive
-public import Buffer_Linear_Primitive
 public import Buffer_Linear_Bounded_Primitives
-public import Storage_Contiguous_Primitives
-public import Memory_Heap_Primitives
-public import Memory_Allocator_Primitive
+public import Buffer_Linear_Primitive
+public import Buffer_Primitive
+public import Fixed_Primitive
 public import Index_Primitives
+public import Memory_Allocator_Primitive
+public import Memory_Heap_Primitives
+public import Storage_Contiguous_Primitives
 
 // MARK: - Construction (pinned to the bounded heap column — the non-growable default)
 //
@@ -100,7 +100,7 @@ extension Fixed where S: ~Copyable {
 // MARK: - Mutable span (pinned: not a seam capability)
 
 extension Fixed where S: ~Copyable {
-    /// Mutable span of the elements (bounded heap column; form-α method).
+    /// Mutable span of the elements (bounded heap column).
     @inlinable
     @_lifetime(&self)
     public mutating func mutableSpan<E: ~Copyable>() -> Swift.MutableSpan<E>

@@ -9,9 +9,9 @@
 //
 // ===----------------------------------------------------------------------===//
 
+public import Equation_Primitives_Standard_Library_Integration
 public import Fixed_Primitive
 public import Span_Protocol_Primitives
-public import Equation_Primitives_Standard_Library_Integration
 
 // MARK: - Equation.Protocol Conformance (span-keyed; span-vending columns)
 

@@ -10,8 +10,8 @@
 // ===----------------------------------------------------------------------===//
 
 public import Fixed_Primitive
-public import Span_Protocol_Primitives
 public import Hash_Primitives_Standard_Library_Integration
+public import Span_Protocol_Primitives
 
 // MARK: - Hash.Protocol Conformance (span-keyed; span-vending columns)
 
