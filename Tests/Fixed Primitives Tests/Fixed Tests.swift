@@ -35,6 +35,7 @@ private typealias FixedArray<E: ~Copyable> = Fixed<BoundedHeapColumn<E>>
 struct FixedTests {
 
     @Test
+    @_optimize(none)  // workaround: see file footer (SILBitfield Mem2Reg overflow)
     func `checked init populates every slot; properties hold`() throws {
         let f = try FixedArray<Int>(count: Index<Int>.Count(3)) { _ in 7 }
         let count = f.count
@@ -48,6 +49,7 @@ struct FixedTests {
     }
 
     @Test
+    @_optimize(none)  // workaround: see file footer (SILBitfield Mem2Reg overflow)
     func `repeating + subscript read-write + swap`() {
         var f = FixedArray<Int>(repeating: 1, count: Index<Int>.Count(3))
         f[0] = 10
@@ -62,6 +64,7 @@ struct FixedTests {
     }
 
     @Test
+    @_optimize(none)  // workaround: see file footer (SILBitfield Mem2Reg overflow)
     func `OutputSpan init enforces full population and reads back via span`() {
         let f = FixedArray<Int>(capacity: Index<Int>.Count(3)) { span in
             span.append(1)
@@ -77,6 +80,7 @@ struct FixedTests {
     }
 
     @Test
+    @_optimize(none)  // workaround: see file footer (SILBitfield Mem2Reg overflow)
     func `mutableSpan writes through; index defaults navigate`() throws {
         var f = try FixedArray<Int>(count: Index<Int>.Count(2)) { _ in 5 }
         do {
@@ -109,6 +113,7 @@ struct FixedTests {
     }
 
     @Test
+    @_optimize(none)  // workaround: see file footer (SILBitfield Mem2Reg overflow)
     func `Fixed equality and hashing are span-keyed and capacity-independent`() throws {
         let f1 = try FixedArray<Int>(count: Index<Int>.Count(3)) { _ in 7 }
         let f2 = try FixedArray<Int>(count: Index<Int>.Count(3)) { _ in 7 }
@@ -140,3 +145,33 @@ private struct Item: ~Copyable {
     init(_ id: Int) { self.id = id }
     deinit { Probe.record() }
 }
+
+// MARK: - `@_optimize(none)` workaround (release-config compiler bugs)
+//
+// TWO distinct Swift 6.3 `-O` bugs touch this suite. The split annotation above is
+// DELIBERATE — do NOT "tidy" it by annotating every test, and do NOT annotate the
+// move-only test. (Both backtraces reproduce on macOS-release AND Ubuntu-release; only
+// `swift test` defaulting to `-Onone` makes a plain `swift test` look clean.)
+//
+// (1) Mem2Reg / OSSACompleteLifetime SILBitfield overflow — the build-blocker.
+//     Under `-O` the inliner collapses the whole `@inlinable` ~Copyable / generic /
+//     closure-bearing `Fixed<Buffer<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<E>>
+//     .Linear.Bounded>` accessor+init chain into a test function; on the larger tests the
+//     resulting deep nested-borrow graph overflows the per-function `SILBitfield` budget:
+//       Assertion failed: (endBit <= numCustomBits ...), SILBitfield at SILBitfield.h:60
+//       While running pass "Mem2Reg" on "<the @Test function>"   → signal 6.
+//     `@_optimize(none)` keeps the inliner from collapsing the chain in, so no function
+//     overflows. The crash site is the TEST function (the inlining sink), not any library
+//     declaration — the library (Sources) is release-clean.
+//
+// (2) `@_optimize(none)` + `consume` of a move-only value SKIPS its element deinits.
+//     Putting `@_optimize(none)` on `move-only elements live in Fixed and tear down once`
+//     made its `Item` deinits not run at `-O` (`Probe.destroyedCount → 0`, not 2) — a
+//     teardown miscompile of the NoOptimization-in-an-`-O`-build mode. That test does NOT
+//     trigger bug (1) (too few inlined accessors), so it is LEFT UNANNOTATED and passes.
+//     *** Do NOT add `@_optimize(none)` to any test that observes move-only element deinits
+//     — it silently suppresses them. ***
+//
+// Behaviour-preserving (tests assert identical results; only codegen is unoptimized).
+// Remove the annotations when bug (1) is fixed upstream; never annotate a deinit-observing
+// test for bug (2). Dossier: swift-institute/Issues/swift-issue-fixed-release-compiler-crash.
