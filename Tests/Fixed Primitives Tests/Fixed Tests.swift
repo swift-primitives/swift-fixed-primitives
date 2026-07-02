@@ -15,6 +15,7 @@
 import Buffer_Linear_Bounded_Primitive
 import Buffer_Linear_Primitive
 import Buffer_Primitive
+import Buffer_Primitives_Test_Support
 import Fixed_Primitives
 import Index_Primitives
 import Memory_Allocator_Primitive
@@ -25,11 +26,30 @@ import Storage_Primitive
 import Tagged_Primitives_Standard_Library_Integration
 import Testing
 
-/// The non-growable bounded column + the always-full discipline over it.
+/// The non-growable bounded column + the always-full discipline over it — the
+/// column the canonical front door ([DS-028]) pins.
 private typealias BoundedHeapColumn<E: ~Copyable> =
     Buffer<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<E>>.Linear.Bounded
 
-private typealias FixedArray<E: ~Copyable> = Fixed<BoundedHeapColumn<E>>
+/// The always-full array — spelled through the CANONICAL front door ([DS-028]),
+/// never the carrier `__Fixed` or a full column spelling (the silent-retype
+/// hazard, `Research/adt-tower.md` §9.4).
+private typealias FixedArray<E: ~Copyable> = Fixed<E>
+
+// MARK: - [DS-024]: the column is lawful from the family's own suite
+
+@Suite
+struct FixedColumnLawTests {
+
+    @Test
+    func `the bounded heap column obeys the seam ledger laws`() {
+        let violations = Seam.Ledger.violations(
+            makeEmpty: { BoundedHeapColumn<Int>(minimumCapacity: Index<Int>.Count(4)) },
+            element: { $0 }
+        )
+        #expect(violations.isEmpty, "\(violations)")
+    }
+}
 
 @Suite(.serialized)
 struct FixedTests {
@@ -155,7 +175,7 @@ private struct Item: ~Copyable {
 //
 // (1) Mem2Reg / OSSACompleteLifetime SILBitfield overflow — the build-blocker.
 //     Under `-O` the inliner collapses the whole `@inlinable` ~Copyable / generic /
-//     closure-bearing `Fixed<Buffer<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<E>>
+//     closure-bearing `__Fixed<Buffer<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<E>>
 //     .Linear.Bounded>` accessor+init chain into a test function; on the larger tests the
 //     resulting deep nested-borrow graph overflows the per-function `SILBitfield` budget:
 //       Assertion failed: (endBit <= numCustomBits ...), SILBitfield at SILBitfield.h:60

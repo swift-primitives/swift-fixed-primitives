@@ -15,7 +15,7 @@ public import Span_Protocol_Primitives
 
 // MARK: - Hash.Protocol Conformance (span-keyed; span-vending columns)
 
-extension Fixed: Hash.`Protocol` where S: Span.`Protocol` & ~Copyable, S.Element: Hash.`Protocol` {
+extension __Fixed: Hash.`Protocol` where S: Span.`Protocol` & ~Copyable, S.Element: Hash.`Protocol` {
     /// Hashes the count and elements, in order, over the span.
     @inlinable
     public borrowing func hash(into hasher: inout Hasher) {

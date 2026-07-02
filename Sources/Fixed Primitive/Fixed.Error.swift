@@ -10,8 +10,9 @@
 // ===----------------------------------------------------------------------===//
 
 public import Index_Primitives
+public import Store_Protocol_Primitives
 
-extension Fixed where S: ~Copyable {
+extension __Fixed where S: Store.`Protocol` & ~Copyable {
     /// Errors that can occur during fixed array construction.
     public enum Error: Swift.Error, Sendable, Equatable {
         /// The requested element count is negative or otherwise invalid.

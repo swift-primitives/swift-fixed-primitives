@@ -11,7 +11,7 @@ public import Collection_Primitives
 //
 // ===----------------------------------------------------------------------===//
 public import Fixed_Primitive
-import Index_Primitives
+public import Index_Primitives
 public import Iterable
 public import Iterator_Chunk_Primitives
 // Internal: supplies the memory→Iterable bridge default that witnesses `makeIterator()`
@@ -28,11 +28,27 @@ public import Store_Protocol_Primitives
 // NO element bound (Audit-#5 relaxation, W5-1 — see `Array ~Copyable.swift`):
 // the lattice protocols admit `~Copyable` elements; witnesses read borrowing.
 
-extension Fixed: Collection.`Protocol` where S: Span.`Protocol` & ~Copyable {}
+// The Collection lattice's witnesses (`startIndex`/`endIndex`/`index(after:)`/
+// `index(before:)`/`Index`) live in the "Index navigation" section below, which is
+// bound to `Store.`Protocol` & Buffer.`Protocol`` (the seam) — NOT `Span.`Protocol``.
+// Pre-hoist this was masked: the TYPE itself carried the seam bound unconditionally,
+// so any `S: Span.`Protocol`` conformer trivially also satisfied it. Post-hoist the
+// two axes are independent, so the conformance's `where` clause must intersect BOTH
+// (the witnesses' own bound + the seam), or the compiler cannot prove the witnesses
+// are available wherever the conformance holds.
+extension __Fixed: Collection.`Protocol`
+where S: Span.`Protocol` & Store.`Protocol` & Buffer.`Protocol` & ~Copyable,
+    S.Count == Index_Primitives.Index<S.Element>.Count {
+    public typealias Element = S.Element
+}
 
-extension Fixed: Collection.Access.Random where S: Span.`Protocol` & ~Copyable {}
+extension __Fixed: Collection.Access.Random
+where S: Span.`Protocol` & Store.`Protocol` & Buffer.`Protocol` & ~Copyable,
+    S.Count == Index_Primitives.Index<S.Element>.Count {}
 
-extension Fixed: Collection.Bidirectional where S: Span.`Protocol` & ~Copyable {}
+extension __Fixed: Collection.Bidirectional
+where S: Span.`Protocol` & Store.`Protocol` & Buffer.`Protocol` & ~Copyable,
+    S.Count == Index_Primitives.Index<S.Element>.Count {}
 
 // The `__ArrayProtocol` conformance is WITHDRAWN at extraction (G2 ruling, W5-1):
 // the protocol stays home in swift-array-primitives, grep-verified zero external
@@ -42,7 +58,7 @@ extension Fixed: Collection.Bidirectional where S: Span.`Protocol` & ~Copyable {
 // The count-derived index-navigation members the conformance used to inherit from
 // `Array.Protocol+defaults` are carried locally below.
 
-extension Fixed: Span.`Protocol` where S: Span.`Protocol` & ~Copyable {
+extension __Fixed: Span.`Protocol` where S: Span.`Protocol` & ~Copyable {
     /// Read-only span of the elements, forwarded from the column.
     @inlinable
     public var span: Swift.Span<S.Element> {
@@ -54,7 +70,7 @@ extension Fixed: Span.`Protocol` where S: Span.`Protocol` & ~Copyable {
 }
 
 // No element bound — the D4 bridge vends `Iterator.Chunk` for both element kinds.
-extension Fixed: Iterable where S: Span.`Protocol` & ~Copyable {
+extension __Fixed: Iterable where S: Span.`Protocol` & ~Copyable {
     /// The chunk iterator that walks the column's elements in order.
     @_implements(Iterable,Iterator)  // swiftlint:disable:this comma
     public typealias IterableIterator = Iterator_Primitive.Iterator.Chunk<S.Element>
@@ -64,7 +80,8 @@ extension Fixed: Iterable where S: Span.`Protocol` & ~Copyable {
 // MARK: - Index navigation (count-derived — carried locally at extraction)
 // ============================================================================
 
-extension Fixed where S: ~Copyable {
+extension __Fixed where S: ~Copyable, S: Store.`Protocol` & Buffer.`Protocol`,
+    S.Count == Index_Primitives.Index<S.Element>.Count {
     /// The position of the first element (zero).
     @inlinable
     public var startIndex: Index { .zero }
@@ -92,7 +109,8 @@ extension Fixed where S: ~Copyable {
 // MARK: - Properties (generic)
 // ============================================================================
 
-extension Fixed where S: ~Copyable {
+extension __Fixed where S: ~Copyable, S: Store.`Protocol` & Buffer.`Protocol`,
+    S.Count == Index_Primitives.Index<S.Element>.Count {
     /// The number of elements — by the always-full invariant, equal to `capacity`.
     @inlinable
     public var count: Index.Count { store.count }
@@ -116,7 +134,8 @@ extension Fixed where S: ~Copyable {
 // MARK: - Element Access (generic: the seam subscript, gated)
 // ============================================================================
 
-extension Fixed where S: ~Copyable {
+extension __Fixed where S: ~Copyable, S: Store.`Protocol` & Buffer.`Protocol`,
+    S.Count == Index_Primitives.Index<S.Element>.Count {
     /// Accesses the element at the given typed index.
     ///
     /// The mutating access runs the column's semantic mutation gate first
@@ -144,7 +163,8 @@ extension Fixed where S: ~Copyable {
     }
 }
 
-extension Fixed where S: ~Copyable, S.Element: Copyable {
+extension __Fixed where S: ~Copyable, S.Element: Copyable, S: Store.`Protocol` & Buffer.`Protocol`,
+    S.Count == Index_Primitives.Index<S.Element>.Count {
     /// Returns the element at the typed index, or nil if out of bounds.
     @inlinable
     public func element(at index: Index) -> S.Element? {
@@ -173,7 +193,8 @@ extension Fixed where S: ~Copyable, S.Element: Copyable {
 // MARK: - Mutation (generic; the always-full set: in-place only)
 // ============================================================================
 
-extension Fixed where S: ~Copyable {
+extension __Fixed where S: ~Copyable, S: Store.`Protocol` & Buffer.`Protocol`,
+    S.Count == Index_Primitives.Index<S.Element>.Count {
     /// Exchanges the elements at the two given positions.
     ///
     /// Passing the same index for both has no effect.

@@ -24,7 +24,7 @@ public import Storage_Contiguous_Primitives
 // with `count == capacity` before wrapping. Pins are `where ==` clauses on initializers
 // (mechanic #2).
 
-extension Fixed where S: ~Copyable {
+extension __Fixed where S: ~Copyable {
     /// Creates a fixed array with the specified count, initializing each element.
     ///
     /// - Throws: `Error.invalidCount` if count is invalid.
@@ -32,7 +32,7 @@ extension Fixed where S: ~Copyable {
     public init<E: ~Copyable>(
         count: Index_Primitives.Index<E>.Count,
         initializingWith initializer: (Index_Primitives.Index<E>) -> E
-    ) throws(Fixed<S>.Error)
+    ) throws(__Fixed<S>.Error)
     where S == Buffer<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<E>>.Linear.Bounded {
         guard count >= .zero else {
             throw .invalidCount(count)
@@ -99,7 +99,7 @@ extension Fixed where S: ~Copyable {
 
 // MARK: - Mutable span (pinned: not a seam capability)
 
-extension Fixed where S: ~Copyable {
+extension __Fixed where S: ~Copyable {
     /// Mutable span of the elements (bounded heap column).
     @inlinable
     @_lifetime(&self)
@@ -112,7 +112,7 @@ extension Fixed where S: ~Copyable {
 // MARK: - Buffer Access (Escape Hatch for C Interop; bounded heap column)
 
 @_spi(Unsafe)
-extension Fixed where S: ~Copyable {
+extension __Fixed where S: ~Copyable {
     /// Provides read-only access to the underlying contiguous storage.
     ///
     /// - Warning: This is an escape hatch for C interop. Prefer `span` for safe access.

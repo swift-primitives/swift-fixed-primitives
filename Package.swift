@@ -36,13 +36,20 @@ let package = Package(
     ],
     targets: [
 
-        // MARK: - Namespace + base type (struct Fixed<S>; the always-full discipline)
+        // MARK: - Namespace + base type (carrier __Fixed<S>; the always-full discipline;
+        // front door Fixed<E>, [DS-028])
         .target(
             name: "Fixed Primitive",
             dependencies: [
                 .product(name: "Store Protocol Primitives", package: "swift-storage-primitives"),
                 .product(name: "Buffer Protocol Primitives", package: "swift-buffer-primitives"),
                 .product(name: "Index Primitives", package: "swift-index-primitives"),
+                .product(name: "Buffer Primitive", package: "swift-buffer-primitives"),
+                .product(name: "Buffer Linear Primitive", package: "swift-buffer-linear-primitives"),
+                .product(name: "Buffer Linear Bounded Primitive", package: "swift-buffer-linear-primitives"),
+                .product(name: "Storage Contiguous Primitives", package: "swift-storage-primitives"),
+                .product(name: "Memory Allocator Primitive", package: "swift-memory-allocation-primitives"),
+                .product(name: "Memory Heap Primitives", package: "swift-memory-heap-primitives"),
             ]
         ),
 
@@ -79,6 +86,7 @@ let package = Package(
                 .product(name: "Storage Primitive", package: "swift-storage-primitives"),
                 .product(name: "Tagged Primitives Standard Library Integration", package: "swift-tagged-primitives"),
                 .product(name: "Ordinal Primitives Standard Library Integration", package: "swift-ordinal-primitives"),
+                .product(name: "Buffer Primitives Test Support", package: "swift-buffer-primitives"),
             ]
         )
     ],
