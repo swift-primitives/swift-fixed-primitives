@@ -150,7 +150,7 @@ extension __Fixed where S: ~Copyable, S: Store.`Protocol` & Buffer.`Protocol`,
         }
         _modify {
             precondition(index < count, "Index out of bounds")
-            store.prepareForMutation()
+            store.unshare()
             yield &store[index]
         }
     }
@@ -205,7 +205,7 @@ extension __Fixed where S: ~Copyable, S: Store.`Protocol` & Buffer.`Protocol`,
     public mutating func swap(at i: Index, with j: Index) {
         precondition(i < count && j < count, "Index out of bounds")
         guard i != j else { return }
-        store.prepareForMutation()
+        store.unshare()
         let a = store.move(at: i)
         let b = store.move(at: j)
         store.initialize(at: i, to: b)
