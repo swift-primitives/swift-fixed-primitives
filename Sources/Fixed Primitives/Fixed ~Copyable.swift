@@ -11,7 +11,6 @@ public import Collection_Primitives
 //
 // ===----------------------------------------------------------------------===//
 public import Fixed_Primitive
-public import Index_Primitives
 public import Iterable
 public import Iterator_Chunk_Primitives
 // Internal: supplies the memory→Iterable bridge default that witnesses `makeIterator()`
@@ -37,18 +36,15 @@ public import Store_Protocol_Primitives
 // (the witnesses' own bound + the seam), or the compiler cannot prove the witnesses
 // are available wherever the conformance holds.
 extension __Fixed: Collection.`Protocol`
-where S: Span.`Protocol` & Store.`Protocol` & Buffer.`Protocol` & ~Copyable,
-    S.Count == Index_Primitives.Index<S.Element>.Count {
+where S: Span.`Protocol` & Store.`Protocol` & Buffer.`Protocol` & ~Copyable {
     public typealias Element = S.Element
 }
 
 extension __Fixed: Collection.Access.Random
-where S: Span.`Protocol` & Store.`Protocol` & Buffer.`Protocol` & ~Copyable,
-    S.Count == Index_Primitives.Index<S.Element>.Count {}
+where S: Span.`Protocol` & Store.`Protocol` & Buffer.`Protocol` & ~Copyable {}
 
 extension __Fixed: Collection.Bidirectional
-where S: Span.`Protocol` & Store.`Protocol` & Buffer.`Protocol` & ~Copyable,
-    S.Count == Index_Primitives.Index<S.Element>.Count {}
+where S: Span.`Protocol` & Store.`Protocol` & Buffer.`Protocol` & ~Copyable {}
 
 // The `__ArrayProtocol` conformance is WITHDRAWN at extraction (G2 ruling, W5-1):
 // the protocol stays home in swift-array-primitives, grep-verified zero external
@@ -80,8 +76,7 @@ extension __Fixed: Iterable where S: Span.`Protocol` & ~Copyable {
 // MARK: - Index navigation (count-derived — carried locally at extraction)
 // ============================================================================
 
-extension __Fixed where S: ~Copyable, S: Store.`Protocol` & Buffer.`Protocol`,
-    S.Count == Index_Primitives.Index<S.Element>.Count {
+extension __Fixed where S: ~Copyable, S: Store.`Protocol` & Buffer.`Protocol` {
     /// The position of the first element (zero).
     @inlinable
     public var startIndex: Index { .zero }
@@ -109,8 +104,7 @@ extension __Fixed where S: ~Copyable, S: Store.`Protocol` & Buffer.`Protocol`,
 // MARK: - Properties (generic)
 // ============================================================================
 
-extension __Fixed where S: ~Copyable, S: Store.`Protocol` & Buffer.`Protocol`,
-    S.Count == Index_Primitives.Index<S.Element>.Count {
+extension __Fixed where S: ~Copyable, S: Store.`Protocol` & Buffer.`Protocol` {
     /// The number of elements — by the always-full invariant, equal to `capacity`.
     @inlinable
     public var count: Index.Count { store.count }
@@ -134,8 +128,7 @@ extension __Fixed where S: ~Copyable, S: Store.`Protocol` & Buffer.`Protocol`,
 // MARK: - Element Access (generic: the seam subscript, gated)
 // ============================================================================
 
-extension __Fixed where S: ~Copyable, S: Store.`Protocol` & Buffer.`Protocol`,
-    S.Count == Index_Primitives.Index<S.Element>.Count {
+extension __Fixed where S: ~Copyable, S: Store.`Protocol` & Buffer.`Protocol` {
     /// Accesses the element at the given typed index.
     ///
     /// The mutating access runs the column's semantic mutation gate first
@@ -163,8 +156,7 @@ extension __Fixed where S: ~Copyable, S: Store.`Protocol` & Buffer.`Protocol`,
     }
 }
 
-extension __Fixed where S: ~Copyable, S.Element: Copyable, S: Store.`Protocol` & Buffer.`Protocol`,
-    S.Count == Index_Primitives.Index<S.Element>.Count {
+extension __Fixed where S: ~Copyable, S.Element: Copyable, S: Store.`Protocol` & Buffer.`Protocol` {
     /// Returns the element at the typed index, or nil if out of bounds.
     @inlinable
     public func element(at index: Index) -> S.Element? {
@@ -193,8 +185,7 @@ extension __Fixed where S: ~Copyable, S.Element: Copyable, S: Store.`Protocol` &
 // MARK: - Mutation (generic; the always-full set: in-place only)
 // ============================================================================
 
-extension __Fixed where S: ~Copyable, S: Store.`Protocol` & Buffer.`Protocol`,
-    S.Count == Index_Primitives.Index<S.Element>.Count {
+extension __Fixed where S: ~Copyable, S: Store.`Protocol` & Buffer.`Protocol` {
     /// Exchanges the elements at the two given positions.
     ///
     /// Passing the same index for both has no effect.

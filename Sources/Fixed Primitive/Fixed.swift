@@ -59,8 +59,7 @@ extension __Fixed: Sendable where S: Sendable & ~Copyable {}
 
 // MARK: - Construction (seam-generic: wraps any FULL column)
 
-extension __Fixed where S: ~Copyable, S: Store.`Protocol` & Buffer.`Protocol`,
-    S.Count == Index_Primitives.Index<S.Element>.Count {
+extension __Fixed where S: ~Copyable, S: Store.`Protocol` & Buffer.`Protocol` {
     /// Wraps an existing FULL column.
     ///
     /// - Precondition: `store.count == store.capacity` (the always-full invariant).
