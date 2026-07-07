@@ -37,6 +37,7 @@ public import Store_Protocol_Primitives
 // are available wherever the conformance holds.
 extension __Fixed: Collection.`Protocol`
 where S: Span.`Protocol` & Store.`Protocol` & Buffer.`Protocol` & ~Copyable {
+    /// The element type, aliased from the underlying span's element type.
     public typealias Element = S.Element
 }
 
