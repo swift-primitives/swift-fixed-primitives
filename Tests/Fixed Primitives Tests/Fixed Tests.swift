@@ -153,11 +153,10 @@ struct `Fixed Tests` {
 }
 
 /// Destruction recorder (the suite above is `.serialized`).
-private enum Probe {
-    nonisolated(unsafe) static var _destroyed: Int = 0
-}
+private enum Probe {}
 
 extension Probe {
+    nonisolated(unsafe) static var _destroyed: Int = 0
     static func reset() { unsafe _destroyed = 0 }
     static func record() { unsafe _destroyed += 1 }
     static var destroyedCount: Int { unsafe _destroyed }
