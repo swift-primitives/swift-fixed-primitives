@@ -39,7 +39,7 @@ private typealias FixedArray<E: ~Copyable> = Fixed<E>
 // MARK: - [DS-024]: the column is lawful from the family's own suite
 
 @Suite
-struct FixedColumnLawTests {
+struct `Fixed Column Law Tests` {
 
     @Test
     func `the bounded heap column obeys the seam ledger laws`() {
@@ -52,7 +52,7 @@ struct FixedColumnLawTests {
 }
 
 @Suite(.serialized)
-struct FixedTests {
+struct `Fixed Tests` {
 
     @Test
     @_optimize(none)  // workaround: see file footer (SILBitfield Mem2Reg overflow)
