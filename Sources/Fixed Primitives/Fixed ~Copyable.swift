@@ -198,9 +198,25 @@ extension __Fixed where S: ~Copyable, S: Store.`Protocol` & Buffer.`Protocol` {
         precondition(i < count && j < count, "Index out of bounds")
         guard i != j else { return }
         store.unshare()
-        let a = store.move(at: i)
-        let b = store.move(at: j)
-        store.initialize(at: i, to: b)
-        store.initialize(at: j, to: a)
+        // `Store.`Protocol``'s `move(at:)` / `initialize(at:to:)` are restricted to the
+        // trailing slot (the append/retract discipline some conformers — e.g.
+        // `Buffer.Linear.Bounded` — enforce). Exchanging two arbitrary interior slots via
+        // `Swift.swap(&store[i], &store[j])` also fails: both accesses share the same
+        // `store` base property, so the compiler cannot prove `i != j` disjointness and
+        // reports a static exclusivity violation. Using the trailing slot as a rotation
+        // hole keeps every ledger transition lawful — one retraction, one append — while
+        // still exchanging the two requested elements. See swift-buffer-linear-primitives#3.
+        let tail = count.subtract.saturating(.one).map(Ordinal.init)
+        var carry = store.move(at: tail)
+        if i == tail {
+            Swift.swap(&carry, &store[j])
+        } else if j == tail {
+            Swift.swap(&carry, &store[i])
+        } else {
+            Swift.swap(&carry, &store[i])
+            Swift.swap(&carry, &store[j])
+            Swift.swap(&carry, &store[i])
+        }
+        store.initialize(at: tail, to: carry)
     }
 }
