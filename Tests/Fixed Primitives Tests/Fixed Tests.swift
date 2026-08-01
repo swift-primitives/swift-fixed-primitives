@@ -44,7 +44,6 @@ struct `Fixed Column Law Tests` {
     @Suite struct `Edge Case` {}
     @Suite struct Integration {}
 
-
     @Test
     func `the bounded heap column obeys the seam ledger laws`() {
         let violations = Seam.Ledger.violations(
@@ -60,7 +59,6 @@ struct `Fixed Tests` {
     @Suite struct Unit {}
     @Suite struct `Edge Case` {}
     @Suite struct Integration {}
-
 
     @Test
     // swift-linter:disable:next optimize suppression attribute
