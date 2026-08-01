@@ -40,6 +40,10 @@ private typealias FixedArray<E: ~Copyable> = Fixed<E>
 
 @Suite
 struct `Fixed Column Law Tests` {
+    @Suite struct Unit {}
+    @Suite struct `Edge Case` {}
+    @Suite struct Integration {}
+
 
     @Test
     func `the bounded heap column obeys the seam ledger laws`() {
@@ -53,9 +57,16 @@ struct `Fixed Column Law Tests` {
 
 @Suite(.serialized)
 struct `Fixed Tests` {
+    @Suite struct Unit {}
+    @Suite struct `Edge Case` {}
+    @Suite struct Integration {}
+
 
     @Test
-    @_optimize(none)  // workaround: see file footer (SILBitfield Mem2Reg overflow)
+    // swift-linter:disable:next optimize suppression attribute
+    // REASON: Mem2Reg/OSSACompleteLifetime SILBitfield overflow under -O (build-blocker);
+    // see file footer and swift-institute/Issues/swift-issue-fixed-release-compiler-crash.
+    @_optimize(none)
     func `checked init populates every slot; properties hold`() throws {
         let f = try FixedArray<Int>(count: Index<Int>.Count(3)) { _ in 7 }
         let count = f.count
@@ -69,7 +80,10 @@ struct `Fixed Tests` {
     }
 
     @Test
-    @_optimize(none)  // workaround: see file footer (SILBitfield Mem2Reg overflow)
+    // swift-linter:disable:next optimize suppression attribute
+    // REASON: Mem2Reg/OSSACompleteLifetime SILBitfield overflow under -O (build-blocker);
+    // see file footer and swift-institute/Issues/swift-issue-fixed-release-compiler-crash.
+    @_optimize(none)
     func `repeating + subscript read-write + swap`() {
         var f = FixedArray<Int>(repeating: 1, count: Index<Int>.Count(3))
         f[0] = 10
@@ -84,7 +98,10 @@ struct `Fixed Tests` {
     }
 
     @Test
-    @_optimize(none)  // workaround: see file footer (SILBitfield Mem2Reg overflow)
+    // swift-linter:disable:next optimize suppression attribute
+    // REASON: Mem2Reg/OSSACompleteLifetime SILBitfield overflow under -O (build-blocker);
+    // see file footer and swift-institute/Issues/swift-issue-fixed-release-compiler-crash.
+    @_optimize(none)
     func `OutputSpan init enforces full population and reads back via span`() {
         let f = FixedArray<Int>(capacity: Index<Int>.Count(3)) { span in
             span.append(1)
@@ -100,7 +117,10 @@ struct `Fixed Tests` {
     }
 
     @Test
-    @_optimize(none)  // workaround: see file footer (SILBitfield Mem2Reg overflow)
+    // swift-linter:disable:next optimize suppression attribute
+    // REASON: Mem2Reg/OSSACompleteLifetime SILBitfield overflow under -O (build-blocker);
+    // see file footer and swift-institute/Issues/swift-issue-fixed-release-compiler-crash.
+    @_optimize(none)
     func `mutableSpan writes through; index defaults navigate`() throws {
         var f = try FixedArray<Int>(count: Index<Int>.Count(2)) { _ in 5 }
         do {
@@ -133,7 +153,10 @@ struct `Fixed Tests` {
     }
 
     @Test
-    @_optimize(none)  // workaround: see file footer (SILBitfield Mem2Reg overflow)
+    // swift-linter:disable:next optimize suppression attribute
+    // REASON: Mem2Reg/OSSACompleteLifetime SILBitfield overflow under -O (build-blocker);
+    // see file footer and swift-institute/Issues/swift-issue-fixed-release-compiler-crash.
+    @_optimize(none)
     func `Fixed equality and hashing are span-keyed and capacity-independent`() throws {
         let f1 = try FixedArray<Int>(count: Index<Int>.Count(3)) { _ in 7 }
         let f2 = try FixedArray<Int>(count: Index<Int>.Count(3)) { _ in 7 }
@@ -156,6 +179,7 @@ struct `Fixed Tests` {
 private enum Probe {}
 
 extension Probe {
+    // SAFETY: test-only counter, mutated solely from the single-threaded, .serialized test suite above.
     nonisolated(unsafe) static var _destroyed: Int = 0
     static func reset() { unsafe _destroyed = 0 }
     static func record() { unsafe _destroyed += 1 }
