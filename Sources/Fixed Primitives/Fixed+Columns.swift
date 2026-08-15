@@ -51,7 +51,11 @@ extension __Fixed where S: ~Copyable {
     )
     where S == Buffer<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<E>>.Linear.Bounded {
         if count == .zero {
-            self.init(store: Buffer<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<E>>.Linear.Bounded(minimumCapacity: .zero))
+            self.init(
+                store: Buffer<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<E>>.Linear.Bounded(
+                    minimumCapacity: .zero
+                )
+            )
             return
         }
         let buffer = Buffer<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<E>>.Linear.Bounded(
@@ -85,10 +89,11 @@ extension __Fixed where S: ~Copyable {
         initializingWith initializer: (inout Swift.OutputSpan<E>) throws(Failure) -> Void
     ) throws(Failure)
     where S == Buffer<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<E>>.Linear.Bounded {
-        let buffer = try Buffer<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<E>>.Linear.Bounded(
-            capacity: capacity,
-            initializingWith: initializer
-        )
+        let buffer = try Buffer<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<E>>.Linear
+            .Bounded(
+                capacity: capacity,
+                initializingWith: initializer
+            )
         precondition(
             buffer.count == capacity,
             "Fixed.init(capacity:initializingWith:) requires the OutputSpan to be fully populated."

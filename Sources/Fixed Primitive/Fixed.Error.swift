@@ -19,6 +19,9 @@ extension __Fixed where S: Store.`Protocol` & ~Copyable {
         case invalidCount(Index_Primitives.Index<S.Element>.Count)
 
         /// The index is out of bounds.
-        case indexOutOfBounds(index: Index_Primitives.Index<S.Element>, count: Index_Primitives.Index<S.Element>.Count)
+        case indexOutOfBounds(
+            index: Index_Primitives.Index<S.Element>,
+            count: Index_Primitives.Index<S.Element>.Count
+        )
     }
 }

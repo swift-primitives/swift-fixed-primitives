@@ -15,7 +15,8 @@ public import Span_Protocol_Primitives
 
 // MARK: - Hash.Protocol Conformance (span-keyed; span-vending columns)
 
-extension __Fixed: Hash.`Protocol` where S: Span.`Protocol` & ~Copyable, S.Element: Hash.`Protocol` {
+extension __Fixed: Hash.`Protocol`
+where S: Span.`Protocol` & ~Copyable, S.Element: Hash.`Protocol` {
     /// Hashes the count and elements, in order, over the span.
     @inlinable
     public borrowing func hash(into hasher: inout Hasher) {
@@ -28,5 +29,6 @@ extension __Fixed: Hash.`Protocol` where S: Span.`Protocol` & ~Copyable, S.Eleme
     // conformance to a refining protocol no longer implies the inherited `Swift.Hashable`
     // conformance — state it explicitly. The `hash(into:)` above witnesses it. Matches the
     // swift-product-primitives precedent.
-    extension __Fixed: Swift.Hashable where S: Span.`Protocol` & ~Copyable, S.Element: Hash.`Protocol` {}
+    extension __Fixed: Swift.Hashable
+    where S: Span.`Protocol` & ~Copyable, S.Element: Hash.`Protocol` {}
 #endif
