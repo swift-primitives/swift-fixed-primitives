@@ -15,7 +15,8 @@ public import Span_Protocol_Primitives
 
 // MARK: - Equation.Protocol Conformance (span-keyed; span-vending columns)
 
-extension __Fixed: Equation.`Protocol` where S: Span.`Protocol` & ~Copyable, S.Element: Equation.`Protocol` {
+extension __Fixed: Equation.`Protocol`
+where S: Span.`Protocol` & ~Copyable, S.Element: Equation.`Protocol` {
     /// Compares two fixed arrays for element-wise, ordered equality over the span.
     @inlinable
     public static func == (lhs: borrowing Self, rhs: borrowing Self) -> Bool {
