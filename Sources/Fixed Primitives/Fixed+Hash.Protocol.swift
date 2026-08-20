@@ -24,11 +24,5 @@ where S: Span.`Protocol` & ~Copyable, S.Element: Hash.`Protocol` {
     }
 }
 
-#if swift(>=6.4)
-    // Swift 6.4+ (SE-0499): `Hash.`Protocol`` refines `Swift.Hashable`, and a conditional
-    // conformance to a refining protocol no longer implies the inherited `Swift.Hashable`
-    // conformance — state it explicitly. The `hash(into:)` above witnesses it. Matches the
-    // swift-product-primitives precedent.
-    extension __Fixed: Swift.Hashable
-    where S: Span.`Protocol` & ~Copyable, S.Element: Hash.`Protocol` {}
-#endif
+extension __Fixed: Swift.Hashable
+where S: Span.`Protocol` & ~Copyable, S.Element: Hash.`Protocol` {}
