@@ -12,10 +12,9 @@ let package = Package(
         .visionOS(.v27),
     ],
     products: [
-        // MARK: - Namespace + base type
+
         .library(name: "Fixed Primitive", targets: ["Fixed Primitive"]),
 
-        // MARK: - Ops + Umbrella ([MOD-005])
         .library(name: "Fixed Primitives", targets: ["Fixed Primitives"]),
     ],
     dependencies: [
@@ -78,8 +77,6 @@ let package = Package(
     ],
     targets: [
 
-        // MARK: - Namespace + base type (carrier __Fixed<S>; the always-full discipline;
-        // front door Fixed<E>, [DS-028])
         .target(
             name: "Fixed Primitive",
             dependencies: [
@@ -107,7 +104,6 @@ let package = Package(
             ]
         ),
 
-        // MARK: - Fixed ops + Umbrella ([MOD-005]: re-exports the in-package type module only)
         .target(
             name: "Fixed Primitives",
             dependencies: [
@@ -152,7 +148,6 @@ let package = Package(
             ]
         ),
 
-        // MARK: - Tests
         .testTarget(
             name: "Fixed Primitives Tests",
             dependencies: [
